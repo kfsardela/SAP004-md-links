@@ -1,8 +1,16 @@
-const fs = require('fs')
+// const fs = require('fs')
 
-const mdLinks = (path) => {
+// const mdLinks = (path) => {
 
 
-};
+// };
 
-module.exports = mdLinks;
+// module.exports = mdLinks;
+
+fs = require('fs')
+fs.readFile('README.md', 'utf8', function(err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(data);
+});
