@@ -1,4 +1,22 @@
 {
-  "name": "md-links",
-  "version": "0.1.0"
+    "name": "md-links",
+    "version": "0.1.0",
+    "description": "Biblioteca que extrai os links de arquivos Markdown",
+    "main": "index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "jest --coverage"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kfsardela/SAP004-md-links.git"
+    },
+    "author": "Karine Sardela",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kfsardela/SAP004-md-links/issues"
+    },
+    "homepage": "https://github.com/kfsardela/SAP004-md-links#readme"
 }
