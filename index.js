@@ -67,4 +67,4 @@ function mdLinks(folder) {
 mdLinks();
 
 
-// module.exports = mdLinks;
+module.exports = mdLinks;

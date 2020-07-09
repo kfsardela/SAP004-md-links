@@ -18,5 +18,11 @@
     "bugs": {
         "url": "https://github.com/kfsardela/SAP004-md-links/issues"
     },
-    "homepage": "https://github.com/kfsardela/SAP004-md-links#readme"
+    "homepage": "https://github.com/kfsardela/SAP004-md-links#readme",
+    "bin": {
+        "md-links": "cli.js"
+    },
+    "dependencies": {
+        "axios": "^0.19.2"
+    }
 }
