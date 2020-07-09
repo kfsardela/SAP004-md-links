@@ -2,33 +2,69 @@ const path = require("path")
 const fs = require("fs")
 
 
-const directoryPath = path.join(__dirname, "files")
-fs.readdir(directoryPath, function(err, files) {
-    if (err) {
-        console.log("Error getting directory information.")
-    } else {
-        const filesMd = files.filter(function(file) {
-            return path.extname(file) == ".md"
+const readDirectory = (folder) => {
+    return new Promise((resolved, rejected) => {
+        fs.readdir(folder, function(err, files) {
+            if (err) {
+                return rejected(err.message);
+            } else {
+                const filesMd = files.filter(function(file) {
+                    return path.extname(file) == ".md"
+                })
+
+                const filesPath = filesMd.map(function(file) {
+                    return path.join(folder, file)
+                })
+
+                return resolved(filesPath);
+
+            }
         })
-        filesMd.forEach(function(file) {
-            console.log(file)
-            fs.readFile(directoryPath + "/" + file, 'utf8', function(err, data) {
-                if (err) {
-                    return console.log(err);
-                } else {
-                    const regex = data.match(/(\[.*\])(\(.*\))/gim);
-                    regex.map((el) => {
-                        const linkText = el.split('](');
-                        const text = linkText[0].replace('[', '');
-                        const href = linkText[1].replace(')', '');
-                        return console.log({ file, text, href })
+    })
+}
 
-                    });
-                }
+const readFile = (filePath) => {
+    return new Promise((resolved, rejected) => {
+        fs.readFile(filePath, 'utf8', function(err, data) {
+            if (err) {
+                return rejected(err.message);
+            } else {
+                const regex = data.match(/(\[.*\])(\(.*\))/gim);
+                const arrayRegex = regex.map((item) => {
+                    const linkText = item.split('](');
+                    const text = linkText[0].replace('[', '');
+                    const href = linkText[1].replace(')', '');
+                    return ({ filePath, text, href })
 
-            });
+                });
+                return resolved(arrayRegex);
+
+            }
+        })
+    })
+}
+
+
+
+function mdLinks(folder) {
+    const directoryPath = path.join(__dirname, "files")
+    readDirectory(directoryPath)
+        .then(filesPath => {
+
+            const arrayLinks = filesPath.map(filePath => {
+                return readFile(filePath)
+            })
+            Promise.all(arrayLinks)
+                .then(arrayLinks => {
+                    console.log(arrayLinks)
+                })
         })
 
+    .catch(error => console.log("Promises rejected: " + error));
 
-    }
-})
+
+}
+mdLinks();
+
+
+// module.exports = mdLinks;
