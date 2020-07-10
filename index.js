@@ -1,5 +1,6 @@
 const path = require("path")
 const fs = require("fs")
+const fetch = require('node-fetch');
 
 
 const readDirectory = (folder) => {
@@ -34,7 +35,9 @@ const readFile = (filePath) => {
                     const linkText = item.split('](');
                     const text = linkText[0].replace('[', '');
                     const href = linkText[1].replace(')', '');
-                    return ({ filePath, text, href })
+                    // console.log(status)
+                    const linkObject = { filePath, text, href }
+                    return linkObject
 
                 });
                 return resolved(arrayRegex);
@@ -45,25 +48,57 @@ const readFile = (filePath) => {
 }
 
 
+const validateURL = (link) => {
+    return fetch(link)
+        .then(response => {
+            return response.status
+        })
+        .catch(error => error.status == `fail 404`)
+}
 
-function mdLinks(folder) {
+
+function mdLinks(folder, options) {
     const directoryPath = path.join(__dirname, "files")
     readDirectory(directoryPath)
         .then(filesPath => {
-
-            const arrayLinks = filesPath.map(filePath => {
+            return filesPath.map(filePath => {
                 return readFile(filePath)
             })
-            Promise.all(arrayLinks)
+        })
+        .then(arrayLinks => {
+            return Promise.all(arrayLinks)
                 .then(arrayLinks => {
-                    console.log(arrayLinks)
+                    const linksList = arrayLinks.reduce((acumulator, currentValue) => {
+                        return acumulator.concat(currentValue)
+                    }, [])
+
+                    return linksList
                 })
         })
+        .then(linksList => {
 
-    .catch(error => console.log("Promises rejected: " + error));
+            const promiseLinks = linksList.map(link => {
+                return validateURL(link.href)
+            })
+            return Promise.all(promiseLinks).then(resolvedLinks => {
+                return linksList.map((link, index) => {
+                    link.validate = resolvedLinks[index]
+                    return link
+                })
+            })
+        })
+        .then(teste => {
+            console.log(teste)
+        })
+
+
+    // .catch(error => console.log("Promises rejected: " + error));
 
 
 }
+
+
+
 mdLinks();
 
 
