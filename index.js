@@ -30,7 +30,7 @@ const readFile = (filePath) => {
             if (err) {
                 return rejected(err.message);
             } else {
-                const regex = data.match(/(\[.*\])(\(.*\))/gim);
+                const regex = data.match(/\[(.[^\]]*)\]\((http.*)\)/gm);
                 const arrayRegex = regex.map((item) => {
                     const linkText = item.split('](');
                     const text = linkText[0].replace('[', '');
@@ -50,14 +50,13 @@ const readFile = (filePath) => {
 
 const validateURL = (link) => {
     return fetch(link)
-        .then(response => {
-            return response.status
-        })
-        .catch(error => error.status == `fail 404`)
+        .then(response => `${response.statusText} ${response.status}`)
+        .catch(error => `fail`)
 }
 
 
 function mdLinks(folder, options) {
+    console.log(options)
     const directoryPath = path.join(__dirname, "files")
     readDirectory(directoryPath)
         .then(filesPath => {
@@ -77,18 +76,22 @@ function mdLinks(folder, options) {
         })
         .then(linksList => {
 
-            const promiseLinks = linksList.map(link => {
-                return validateURL(link.href)
-            })
-            return Promise.all(promiseLinks).then(resolvedLinks => {
-                return linksList.map((link, index) => {
-                    link.validate = resolvedLinks[index]
-                    return link
+            if (options === "--validate") {
+
+                const promiseLinks = linksList.map(link => {
+                    return validateURL(link.href)
                 })
-            })
+                return Promise.all(promiseLinks).then(resolvedLinks => {
+                    return linksList.map((link, index) => {
+                        link.validate = resolvedLinks[index]
+                        return link
+                    })
+                })
+            }
+            return linksList
         })
         .then(teste => {
-            console.log(teste)
+            // console.log(teste)
         })
 
 
