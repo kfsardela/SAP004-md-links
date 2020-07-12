@@ -6,12 +6,10 @@ const path = require('path')
 
 program
     .option('-v, --validate', 'validade link')
+    .option('-s, --stats', 'status link')
 program.parse(process.argv);
 
-if (program.validate) {
-    console.log("validate")
-}
-
+mdLinks(path, program).then(response => console.log(response))
 
 //     .action((path) => {
 //         mdLinks(path, { validate: program.validate, stats: program.stats })

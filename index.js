@@ -56,10 +56,9 @@ const validateURL = (link) => {
 
 
 function mdLinks(folder, options) {
-    console.log(options)
-    const directoryPath = path.join(__dirname, "files")
-    readDirectory(directoryPath)
-        .then(filesPath => {
+    return readDirectory(folder)
+
+    .then(filesPath => {
             return filesPath.map(filePath => {
                 return readFile(filePath)
             })
@@ -74,9 +73,10 @@ function mdLinks(folder, options) {
                     return linksList
                 })
         })
+        // Validate
         .then(linksList => {
 
-            if (options === "--validate") {
+            if (options.validate) {
 
                 const promiseLinks = linksList.map(link => {
                     return validateURL(link.href)
@@ -90,19 +90,52 @@ function mdLinks(folder, options) {
             }
             return linksList
         })
-        .then(teste => {
-            // console.log(teste)
+        .then(linksList => {
+            if (options.stats) {
+                const links = linksList.map(link => link.href)
+                const unique = [...new Set(links)];
+                let statistics = {
+                    total: linksList.length,
+                    unique: unique.length
+                }
+                if (options.validate) {
+                    const broken = linksList.filter(link => !link.validate.includes('OK'))
+                    statistics.broken = broken.length
+                }
+                return statistics
+            }
+            return linksList
         })
+        .then(response => {
+
+            if (options.stats) {
+                let stats = [
+                    `Total: ${response.total}`,
+                    `Unique: ${response.unique}`
+                ]
+                if (options.validate) {
+                    stats.push(`Broken: ${response.broken}`)
+                }
+                return stats.join("\n")
+            }
+
+            if (options.validate) {
+                let validate = response.map(link => `${link.filePath} ${link.href} ${link.validate} ${link.text}`)
+
+                return validate.join("\n")
+            }
+
+            let noOptions = response.map(link => `${link.filePath} ${link.href} ${link.text}`)
+
+            return noOptions.join("\n")
+        })
+
 
 
     // .catch(error => console.log("Promises rejected: " + error));
 
 
 }
-
-
-
-mdLinks();
 
 
 module.exports = mdLinks;
