@@ -2,14 +2,18 @@
 
 const program = require('commander');
 const mdLinks = require("./index.js");
-const path = require('path')
+
 
 program
+    .arguments('[path]')
     .option('-v, --validate', 'validade link')
     .option('-s, --stats', 'status link')
+    .action((path) => {
+        mdLinks(path, program).then(response => console.log(response))
+            // console.log(path)
+            // console.log("teste")
+    })
 program.parse(process.argv);
-
-mdLinks(path, program).then(response => console.log(response))
 
 //     .action((path) => {
 //         mdLinks(path, { validate: program.validate, stats: program.stats })
