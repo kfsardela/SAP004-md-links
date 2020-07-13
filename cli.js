@@ -9,6 +9,7 @@ program
     .option('-v, --validate', 'validade link')
     .option('-s, --stats', 'status link')
     .action((path) => {
+        path = path || "./"
         mdLinks(path, program).then(response => console.log(response))
             // console.log(path)
             // console.log("teste")
