@@ -35,7 +35,6 @@ const readFile = (filePath) => {
                     const linkText = item.split('](');
                     const text = linkText[0].replace('[', '');
                     const href = linkText[1].replace(')', '');
-                    // console.log(status)
                     const linkObject = { filePath, text, href }
                     return linkObject
 
@@ -73,7 +72,6 @@ function mdLinks(folder, options) {
                     return linksList
                 })
         })
-        // Validate
         .then(linksList => {
 
             if (options.validate) {
@@ -129,10 +127,6 @@ function mdLinks(folder, options) {
 
             return noOptions.join("\n")
         })
-
-
-
-    // .catch(error => console.log("Promises rejected: " + error));
 
 
 }
